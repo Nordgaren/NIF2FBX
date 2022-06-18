@@ -60,10 +60,11 @@ def export_nif_to_fbx():
     for import_path in root.rglob("*.nif"):
         export_path = import_path.with_suffix(".fbx")
 
+        print("Converting number: ",count)
+        count += 1
+
         # if exists(export_path):
         #     continue
-        print(count)
-        count += 1
 
         try:
             bpy.ops.object.delete()
@@ -73,6 +74,8 @@ def export_nif_to_fbx():
         except Exception as e:
             print("Import Failed: ", import_path)
             print(e)
+        
+        print("")
 
 
 if __name__ == "__main__":
