@@ -32,9 +32,9 @@ namespace NIF2FBX2FLVER
 
         private static void ConvertOneByOne(string[] args)
         {
-            if (args.Length != 3)
+            if (args.Length < 3)
                 throw new ArgumentOutOfRangeException(nameof(args),
-                    "You must provide two arguments: Arg 1: Folder Path of Nif files. Arg 2: Output Folder Path");
+                    "You must provide at least three arguments: Arg 1: Folder Path of Texture files. Arg 2: Folder Path of Nif files. Arg 3: Blender exe location");
 
             string scriptPath = $@"{ExeDir}\convert_nif.py";
 
@@ -55,12 +55,19 @@ namespace NIF2FBX2FLVER
             if (!File.Exists(blenderProc))
                 throw new Exception($"Blender path does not exist! Path: {blenderProc}");
 
+            bool skip = false;
+            
+            if (args.Length > 3 && !bool.TryParse(args[3], out skip))
+            {
+                throw new Exception($"4th argument needs to be a bool (true or false)");
+            }
+
             Console.WriteLine($"Converting {nifFiles.Length} files");
 
             foreach (string filePath in nifFiles)
             {
                 Console.WriteLine($"Processing: {filePath}");
-                string cmdArgs = $@"--background --python ""{scriptPath}"" ""{filePath}"" ""{textureFiles}"""; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
+                string cmdArgs = $@"--background --python ""{scriptPath}"" ""{filePath}"" ""{textureFiles}"" {skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
@@ -84,9 +91,9 @@ namespace NIF2FBX2FLVER
 
         private static void ConvertMany(string[] args)
         {
-            if (args.Length != 3)
+            if (args.Length < 3)
                 throw new ArgumentOutOfRangeException(nameof(args),
-                    "You must provide two arguments: Arg 1: Folder Path of Nif files. Arg 2: Output Folder Path");
+                    "You must provide at least three arguments: Arg 1: Folder Path of Texture files. Arg 2: Folder Path of Nif files. Arg 3: Blender exe location");
 
             string scriptPath = $@"{ExeDir}\mass_convert_nif.py";
 
@@ -102,14 +109,21 @@ namespace NIF2FBX2FLVER
             if (nifFiles.Length <= 0)
                 throw new Exception($"No .nif files found in {nifFolderPath} or subdirectories");
 
-            Console.WriteLine($"Converting {nifFiles.Length} files");
-
             string blenderProc = args[2];
 
             if (!File.Exists(blenderProc))
                 throw new Exception($"Blender path does not exist! Path: {blenderProc}");
 
-            string cmdArgs = $@"--background --python ""{scriptPath}"" ""{nifFolderPath}"" ""{textureFiles}"""; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
+            bool skip = false;
+
+            if (args.Length > 3 && !bool.TryParse(args[3], out skip)) 
+            {
+                throw new Exception($"4th argument needs to be a bool (true or false)");
+            }
+
+            Console.WriteLine($"Converting {nifFiles.Length} files");
+            
+            string cmdArgs = $@"--background  --log ""*"" --python ""{scriptPath}"" ""{nifFolderPath}"" ""{textureFiles}"" {skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo

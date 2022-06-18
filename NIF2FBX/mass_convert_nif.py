@@ -43,40 +43,43 @@ def replace_mw_textures(tex):
         links.new(node.outputs["UV"], nodes.get("Image Texture").inputs["Vector"])
 
     for image in bpy.data.images:
-        if (image.filepath == ""):
+        if not image.filepath:
             continue
         img = pathlib.Path(image.filepath).with_suffix(".dds").name
         path = tex.joinpath(img)
         image.filepath = str(path)
 
-
 def export_nif_to_fbx():
-    root = pathlib.Path(sys.argv[4].strip("\""))
-    tex = pathlib.Path(sys.argv[5].strip("\""))
+    root = pathlib.Path(sys.argv[6].strip("\""))
+    tex = pathlib.Path(sys.argv[7].strip("\""))
     print(root)
     print(tex)
 
     count = 1
     for import_path in root.rglob("*.nif"):
         export_path = import_path.with_suffix(".fbx")
-
         print("Converting number: ",count)
         count += 1
 
-        # if exists(export_path):
-        #     continue
+        if skip & exists(export_path):
+            continue
 
         try:
             bpy.ops.object.delete()
-            bpy.ops.import_scene.mw(filepath=str(import_path))
+            bpy.ops.import_scene.mw(filepath=str(import_path), ignore_animations=True, ignore_custom_normals=True)
             replace_mw_textures(tex)
             bpy.ops.export_scene.fbx(filepath=str(export_path), embed_textures=False)
         except Exception as e:
             print("Import Failed: ", import_path)
             print(e)
+            #inp = input()
         
         print("")
 
 
+skip = False
+
 if __name__ == "__main__":
+    skip = sys.argv[8] == 'True'
     export_nif_to_fbx()
+    read = input("Press the any key to end the program")
