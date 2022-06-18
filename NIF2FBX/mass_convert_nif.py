@@ -65,8 +65,8 @@ def export_nif_to_fbx():
             continue
 
         try:
-            bpy.ops.object.delete()
-            bpy.ops.import_scene.mw(filepath=str(import_path), ignore_animations=True, ignore_custom_normals=True)
+            bpy.ops.wm.read_homefile(use_empty=True)
+            bpy.ops.import_scene.mw(filepath=str(import_path), ignore_animations=True)
             replace_mw_textures(tex)
             bpy.ops.export_scene.fbx(filepath=str(export_path), embed_textures=False)
         except Exception as e:
