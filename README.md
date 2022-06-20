@@ -15,3 +15,8 @@ I don't recommend doing all of them at once, as the tool even restarts blender, 
 
 # Credits
 [Greatness7](https://github.com/Greatness7) - Gave me most of the script that I needed
+
+# Change Log
+### 1.0
+
+* Initial Release
