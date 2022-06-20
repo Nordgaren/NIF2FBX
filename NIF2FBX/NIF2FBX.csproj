@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <None Update="convert_nif.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="mass_convert_nif.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
