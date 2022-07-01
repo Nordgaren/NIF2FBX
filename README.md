@@ -12,7 +12,7 @@ Optionally, you can add `True` to the end of the command to skip files that have
 
 The tool will work recursively through the folder you give it, so it will do all subfolders, as well.
 
-I don't recommend doing all of them at once, as the tool even restarts blender, and it does get a bit bogged down. I will try to fix this in the future.  
+I don't recommend doing all of them at once, as the tool even makes a new scene in blender, and it does get a bit bogged down. I will try to fix this in the future.  
 
 # Credits
 [Greatness7](https://github.com/Greatness7) - Gave me most of the script that I needed
