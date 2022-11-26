@@ -76,6 +76,8 @@ def export_nif_to_fbx():
                 print("Failed: ", import_path)
                 print(e)
 
+            replace_mw_textures(tex)
+
             if io_scene_mw.nif_import.is_no_collide(import_path):
                 rootNode = None
                 for ob in bpy.context.selected_objects:
@@ -88,7 +90,6 @@ def export_nif_to_fbx():
                 empty.name = 'NCO'
                 empty.parent = rootNode
 
-            replace_mw_textures(tex)
             bpy.ops.export_scene.fbx(filepath=str(export_path), embed_textures=False)#, global_scale=0.01)
         except Exception as e:
             print("Export Failed: ", import_path)
