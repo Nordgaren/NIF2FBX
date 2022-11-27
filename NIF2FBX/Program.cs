@@ -140,6 +140,7 @@ namespace NIF2FBX2FLVER
             proc.Start();
             proc.WaitForExit();
 
+            Console.WriteLine("Complete! Press any key to exit!");
             Console.ReadLine();
         }
     }

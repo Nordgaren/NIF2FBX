@@ -4,6 +4,8 @@ import sys
 import bpy
 import pathlib
 import io_scene_mw.nif_import
+# from io_scene_mw.lib.es3 import nif
+from es3 import nif
 from contextlib import redirect_stdout
 from os.path import exists
 import io
@@ -52,6 +54,18 @@ def replace_mw_textures(tex):
         image.filepath = str(path)
 
 def export_nif_to_fbx():
+    NiStream_load = nif.NiStream.load
+
+    def patched_load(self, filepath):
+        NiStream_load(self, filepath)
+
+        for obj in self.objects_of_type(nif.NiStringExtraData):
+            if obj.string_data.startswith("NC"):
+                self.root.children.append(nif.NiNode(name="NCO"))
+                break
+
+    nif.NiStream.load = patched_load
+
     root = pathlib.Path(sys.argv[6].strip("\""))
     tex = pathlib.Path(sys.argv[7].strip("\""))
     print(root)
@@ -77,18 +91,6 @@ def export_nif_to_fbx():
                 print(e)
 
             replace_mw_textures(tex)
-
-            if io_scene_mw.nif_import.is_no_collide(import_path):
-                rootNode = None
-                for ob in bpy.context.selected_objects:
-                    if ob.parent is None:
-                        rootNode = ob
-                        break
-                        
-                bpy.ops.object.empty_add(location=(0,0,0))
-                empty = bpy.context.object
-                empty.name = 'NCO'
-                empty.parent = rootNode
 
             bpy.ops.export_scene.fbx(filepath=str(export_path), embed_textures=False)#, global_scale=0.01)
         except Exception as e:
