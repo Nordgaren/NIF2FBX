@@ -1,8 +1,13 @@
-﻿using System;
+﻿using CommandLine;
+using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace NIF2FBX2FLVER
 {
@@ -24,11 +29,80 @@ namespace NIF2FBX2FLVER
 
         public static readonly string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         //public static readonly string Process = @"G:\Steam\steamapps\common\Blender\blender.exe"; // Put the path to the blender.exe that has the mw plugin activated
-        private static void Main(string[] args)
-        {
-            ConvertMany(args);
+        private static void Main(string[] args) {
+            string scriptPath = $@"{ExeDir}\mass_convert_nif.py";
+
+
+            
+            ParserResult<CommandLineOptions> ar = Parser.Default.ParseArguments<CommandLineOptions>(args)
+                .WithParsed<CommandLineOptions>(o => {
+                ConvertManyInChunks(o);
+            });
+           
+            //ConvertMany(args);
             //ConvertOneByOne(args);
         }
+
+        private static void ConvertManyInChunks(CommandLineOptions options) {
+            if (options.InputFolder is null)
+                options.InputFolder = $"{options.MorrowwindPath}\\\\Data Files\\meshes\\";
+            
+            if (options.TextureFolder is null)
+                options.TextureFolder = $"{options.MorrowwindPath}\\\\Data Files\\textures\\";
+
+            if (options.ScriptPath is null)
+                options.ScriptPath = $@"{ExeDir}\mass_convert_nif.py";
+            
+            if (!File.Exists(options.ScriptPath))
+                throw new($"Script does not exist! Path: {options.ScriptPath}");
+
+            string[] directories = Directory.GetDirectories(options.InputFolder);
+
+            if (options.Recursive) {
+                ConvertFolder(options.InputFolder, options);
+            }
+            else {
+                foreach (string directory in directories) {
+                    ConvertFolder(directory, options);
+                }
+            }
+         
+
+            Console.WriteLine("Finished converting! Press any key to continue!");
+            Console.ReadKey();
+        }
+
+        private static string ErrorMessage = string.Empty;
+        
+        private static void ConvertFolder(string folder, CommandLineOptions options) {
+            
+            string cmdArgs = $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowwindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
+           
+            var proc = new Process
+       
+            {
+                StartInfo = new()
+                {
+                    FileName = options.BlenderPath,
+                    Arguments = cmdArgs,
+                    UseShellExecute = true,
+                    CreateNoWindow = true,
+                }
+            };
+
+            proc.Start();
+            proc.WaitForExit();
+
+        }
+        
+                
+        private static void _pipeClient_OutputDataReceived(object sender, DataReceivedEventArgs e) {
+            Console.WriteLine(e.Data);
+        }
+        private static void _pipeClient_ErrorDataReceived(object sender, DataReceivedEventArgs e) {
+            ErrorMessage += e.Data;
+        }
+
 
         private static void ConvertOneByOne(string[] args)
         {

@@ -1,14 +1,17 @@
 ﻿# Original script by Greatness7
 
-import sys
+import argparse
 import bpy
+from contextlib import redirect_stdout
+from es3 import nif
 import pathlib
 import io_scene_mw.nif_import
 # from io_scene_mw.lib.es3 import nif
-from es3 import nif
-from contextlib import redirect_stdout
-from os.path import exists
 import io
+from os.path import exists
+import sys
+
+
 
 def replace_mw_textures(tex):
     for ob in bpy.context.selected_objects:
@@ -53,7 +56,8 @@ def replace_mw_textures(tex):
         path = tex.joinpath(img)
         image.filepath = str(path)
 
-def export_nif_to_fbx():
+
+def patch_NiStream_load():
     NiStream_load = nif.NiStream.load
 
     def patched_load(self, filepath):
@@ -66,44 +70,71 @@ def export_nif_to_fbx():
 
     nif.NiStream.load = patched_load
 
-    root = pathlib.Path(sys.argv[6].strip("\""))
-    tex = pathlib.Path(sys.argv[7].strip("\""))
-    print(root)
-    print(tex)
+
+def export_nif_to_fbx(args, import_path):  # truly shitcode, now. I'm sorry, Greatness! :mechands:
+    export_path = import_path.with_suffix(".fbx")
+    print("Converting: ", import_path)
+
+    if args.skip & exists(export_path):
+        return
+
+    try:
+        bpy.ops.wm.read_homefile(load_ui=False, use_empty=True)
+        # bpy.context.preferences.addons["io_scene_mw"].scale_correction = 1.0
+        try:
+            bpy.ops.import_scene.mw(filepath=str(import_path), ignore_animations=True)
+        except Exception as e:
+            print("Failed: ", import_path)
+            print(e)
+
+        replace_mw_textures(args.tex)
+
+        bpy.ops.export_scene.fbx(filepath=str(export_path), embed_textures=False)  # , global_scale=0.01)
+    except Exception as e:
+        print("Export Failed: ", import_path)
+        print(e)
+        # inp = input()
+
+
+def begin_conversion(args):
+    patch_NiStream_load()
+
+    if args.input is None:
+        args.input = f"Texture Path: {args.mw_path}\\Data Files\\meshes\\"
+
+    if args.tex is None:
+        args.tex = f"Texture Path: {args.mw_path}\\Data Files\\textures\\"
+
+    print(f"Input Path: {args.input}")
+    print(f"Texture Path: {args.tex}")
+
+    input_path = pathlib.Path(args.input)
 
     count = 1
-    for import_path in root.rglob("*.nif"):
-        export_path = import_path.with_suffix(".fbx")
-        print("Converting: ",import_path)
-        print("Converting number: ",count)
+    total = len(list(input_path.rglob("*.nif") if args.recurs else input_path.glob("*.nif"))) #I hate this. IDK why I can't just get a count and keep the generator
+
+    files = input_path.rglob("*.nif") if args.recurs else input_path.glob("*.nif")
+
+    for file in files:
+        print(f"Converting number: {count}\{total}")
         count += 1
-
-        if skip & exists(export_path):
-            continue
-
-        try:
-            bpy.ops.wm.read_homefile(load_ui=False, use_empty=True)
-            #bpy.context.preferences.addons["io_scene_mw"].scale_correction = 1.0
-            try:
-                bpy.ops.import_scene.mw(filepath=str(import_path), ignore_animations=True)
-            except Exception as e:
-                print("Failed: ", import_path)
-                print(e)
-
-            replace_mw_textures(tex)
-
-            bpy.ops.export_scene.fbx(filepath=str(export_path), embed_textures=False)#, global_scale=0.01)
-        except Exception as e:
-            print("Export Failed: ", import_path)
-            print(e)
-            #inp = input()
-        
+        export_nif_to_fbx(args, file)
         print("")
 
+def parse_program_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mw_path")
+    parser.add_argument("-i", "--input", type=str, required=False)
+    parser.add_argument("-x", "--tex", type=str, required=False)
+    parser.add_argument("-r", "--recurs", type=bool, default=True)
+    parser.add_argument("-s", "--skip", type=bool, default=True)
 
-skip = False
+    #parser.add_argument("--background", action="store_true")
+    #parser.add_argument("--python", action="store_true")
+
+    return parser.parse_known_args()[0] #god why
 
 if __name__ == "__main__":
-    skip = sys.argv[8] == 'True'
-    export_nif_to_fbx()
-    read = input("Press the any key to end the program")
+    args = parse_program_args()
+    begin_conversion(args)
+    print(f"Finished converting folder {args.input}")
