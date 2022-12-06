@@ -29,19 +29,12 @@ namespace NIF2FBX2FLVER
     {
 
         public static readonly string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        //public static readonly string Process = @"G:\Steam\steamapps\common\Blender\blender.exe"; // Put the path to the blender.exe that has the mw plugin activated
         private static void Main(string[] args) {
-            string scriptPath = $@"{ExeDir}\mass_convert_nif.py";
-
-
-            
-            ParserResult<CommandLineOptions> ar = Parser.Default.ParseArguments<CommandLineOptions>(args)
+            Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .WithParsed<CommandLineOptions>(o => {
                 ConvertManyInChunks(o);
             });
            
-            //ConvertMany(args);
-            //ConvertOneByOne(args);
         }
 
         private static List<Process> runningProcessess = new();
@@ -78,8 +71,6 @@ namespace NIF2FBX2FLVER
             Console.ReadKey();
         }
 
-        private static string ErrorMessage = string.Empty;
-        
         private static void ConvertFolder(string folder, CommandLineOptions options) { 
             
             string cmdArgs = $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
