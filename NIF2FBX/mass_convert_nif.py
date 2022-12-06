@@ -129,9 +129,6 @@ def parse_program_args():
     parser.add_argument("-r", "--recurs", type=bool, default=True)
     parser.add_argument("-s", "--skip", type=bool, default=True)
 
-    #parser.add_argument("--background", action="store_true")
-    #parser.add_argument("--python", action="store_true")
-
     return parser.parse_known_args()[0] #god why
 
 if __name__ == "__main__":

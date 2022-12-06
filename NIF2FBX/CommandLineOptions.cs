@@ -7,8 +7,8 @@ namespace NIF2FBX2FLVER {
         [Value(0, MetaName = "Blender Path", HelpText = "Path to Blender exe.", Required = true)]
         public string BlenderPath { get; set; }
         
-        [Value(1, MetaName = "Morrowwind Path", HelpText = "Path to unpacked Morrowwind folder.", Required = true)]
-        public string MorrowwindPath { get; set; }
+        [Value(1, MetaName = "Morrowind Path", HelpText = "Path to unpacked Morrowind folder.", Required = true)]
+        public string MorrowindPath { get; set; }
 
         [Option('p', "python", Required = false, HelpText = "NIF conversion python script path. Defaults to inside this exe's folder + mass_convert_nif.py")]
         public string ScriptPath { get; set; }

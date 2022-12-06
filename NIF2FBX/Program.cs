@@ -48,10 +48,10 @@ namespace NIF2FBX2FLVER
 
         private static void ConvertManyInChunks(CommandLineOptions options) {
             if (options.InputFolder is null)
-                options.InputFolder = $"{options.MorrowwindPath}\\\\Data Files\\meshes\\";
+                options.InputFolder = $"{options.MorrowindPath}\\\\Data Files\\meshes\\";
             
             if (options.TextureFolder is null)
-                options.TextureFolder = $"{options.MorrowwindPath}\\\\Data Files\\textures\\";
+                options.TextureFolder = $"{options.MorrowindPath}\\\\Data Files\\textures\\";
 
             if (options.ScriptPath is null)
                 options.ScriptPath = $@"{ExeDir}\mass_convert_nif.py";
@@ -80,9 +80,9 @@ namespace NIF2FBX2FLVER
 
         private static string ErrorMessage = string.Empty;
         
-        private static void ConvertFolder(string folder, CommandLineOptions options) {
+        private static void ConvertFolder(string folder, CommandLineOptions options) { 
             
-            string cmdArgs = $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowwindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
+            string cmdArgs = $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
            
             var proc = new Process
        
@@ -103,128 +103,6 @@ namespace NIF2FBX2FLVER
                 proc.WaitForExit();
 
         }
-        
-                
-        private static void _pipeClient_OutputDataReceived(object sender, DataReceivedEventArgs e) {
-            Console.WriteLine(e.Data);
-        }
-        private static void _pipeClient_ErrorDataReceived(object sender, DataReceivedEventArgs e) {
-            ErrorMessage += e.Data;
-        }
 
-
-        private static void ConvertOneByOne(string[] args)
-        {
-            if (args.Length < 3)
-                throw new (
-                    "You must provide at least three arguments: Arg 1: Folder Path of Texture files. Arg 2: Folder Path of Nif files. Arg 3: Blender exe location\n" +
-                    "You may provide an additional Arg 4, which is True for 'Skip existing files' and False for 'Don't skip existing files'. Arg 4 is False by default,\n" +
-                    " and will overwrite existing files");
-
-            string scriptPath = $@"{ExeDir}\convert_nif.py";
-
-            if (!File.Exists(scriptPath))
-                throw new($"Script does not exist! Path: {scriptPath}");
-
-            string textureFiles = args[0];
-
-            string nifFolderPath = args[1];
-            string[] nifFiles = Directory.GetFiles(nifFolderPath, "*.nif", SearchOption.AllDirectories);
-
-            if (nifFiles.Length <= 0)
-                throw new($"No .nif files found in {nifFolderPath} or subdirectories");
-
-
-            string blenderProc = args[2];
-
-            if (!File.Exists(blenderProc))
-                throw new($"Blender path does not exist! Path: {blenderProc}");
-
-            bool skip = false;
-            
-            if (args.Length > 3 && !bool.TryParse(args[3], out skip))
-            {
-                throw new($"4th argument needs to be a bool (true or false)");
-            }
-
-            Console.WriteLine($"Converting {nifFiles.Length} files");
-
-            foreach (string filePath in nifFiles)
-            {
-                Console.WriteLine($"Processing: {filePath}");
-                string cmdArgs = $@"--background --python ""{scriptPath}"" ""{filePath}"" ""{textureFiles}"" {skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
-                var proc = new Process
-                {
-                    StartInfo = new()
-                    {
-                        FileName = blenderProc,
-                        Arguments = cmdArgs,
-                        UseShellExecute = true,
-
-                        CreateNoWindow = true,
-                    }
-                };
-
-                proc.Start();
-                proc.WaitForExit();
-                Console.WriteLine(proc.StandardOutput); 
-                Console.WriteLine($"Complete: {filePath}");
-            }
-
-            Console.ReadLine();
-        }
-
-        private static void ConvertMany(string[] args)
-        {
-            if (args.Length < 3)
-                throw new ArgumentOutOfRangeException(nameof(args),
-                    "You must provide at least three arguments: Arg 1: Folder Path of Texture files. Arg 2: Folder Path of Nif files. Arg 3: Blender exe location");
-
-            string scriptPath = $@"{ExeDir}\mass_convert_nif.py";
-
-            if (!File.Exists(scriptPath))
-                throw new($"Script does not exist! Path: {scriptPath}");
-
-            string textureFiles = args[0];
-            Console.WriteLine(textureFiles);
-
-            string nifFolderPath = args[1];
-            string[] nifFiles = Directory.GetFiles(nifFolderPath, "*.nif", SearchOption.AllDirectories);
-
-            if (nifFiles.Length <= 0)
-                throw new($"No .nif files found in {nifFolderPath} or subdirectories");
-
-            string blenderProc = args[2];
-
-            if (!File.Exists(blenderProc))
-                throw new($"Blender path does not exist! Path: {blenderProc}");
-
-            bool skip = false;
-
-            if (args.Length > 3 && !bool.TryParse(args[3], out skip)) 
-            {
-                throw new($"4th argument needs to be a bool (true or false)");
-            }
-
-            Console.WriteLine($"Converting {nifFiles.Length} files");
-            
-            string cmdArgs = $@"--background  --log ""*"" --python ""{scriptPath}"" ""{nifFolderPath}"" ""{textureFiles}"" {skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
-            var proc = new Process
-            {
-                StartInfo = new()
-                {
-                    FileName = blenderProc,
-                    Arguments = cmdArgs,
-                    UseShellExecute = true,
-                    CreateNoWindow = true,
-                }
-            };
-
-            proc.Start();
-            proc.WaitForExit();
-
-            Console.WriteLine("Complete! Press any key to exit!");
-            Console.ReadLine();
-        }
     }
 }
