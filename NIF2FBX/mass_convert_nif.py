@@ -12,8 +12,14 @@ from os.path import exists
 import sys
 
 
+def debug_stuff(ob, base_texture_image):
+    print(ob.name)
+    print(str(base_texture_image))
+    print(ob.active_material.name)
+    read = input()
 
 def replace_mw_textures(tex):
+    # This goes through all selected objects and makes sure that the materials have the correct shader/material name
     for ob in bpy.context.selected_objects:
         if ob.type != "MESH":
             continue
@@ -21,17 +27,13 @@ def replace_mw_textures(tex):
         try:
             base_texture_image = ob.active_material.mw.base_texture.image
             base_texture_uv_map = ob.data.uv_layers.active.name
+            # Some Debug Stuff. Uncomment to see
+            # debug_stuff(ob, base_texture_image)
+            # End Debug Stuff
         except AttributeError:
             continue
-
+        
         # create/assign new material
-
-        # Some Debug Stuff. Uncomment to see
-        # print(ob.name)
-        # print(str(base_texture_image))
-        # print(ob.active_material.name)
-        # read = input()
-        # End Debug Stuff
         material = bpy.data.materials.new(ob.active_material.name + " | " + ob.name)  # shader name
         material.use_nodes = True
         ob.data.materials[ob.active_material_index] = material
@@ -49,6 +51,7 @@ def replace_mw_textures(tex):
         node.uv_map = base_texture_uv_map
         links.new(node.outputs["UV"], nodes.get("Image Texture").inputs["Vector"])
 
+    # Get every texture referenced in the scene and point it to the correct texture path in the Morrrowind folder.  
     for image in bpy.data.images:
         if not image.filepath:
             continue
@@ -57,6 +60,7 @@ def replace_mw_textures(tex):
         image.filepath = str(path)
 
 
+# Thank you to Greatness7 for showing me that I can patch this function to add the necessary dummy node for missing collision.
 def patch_NiStream_load():
     NiStream_load = nif.NiStream.load
 
@@ -77,7 +81,9 @@ def export_nif_to_fbx(args, import_path):  # truly shitcode, now. I'm sorry, Gre
 
     if args.skip & exists(export_path):
         return
-
+    
+    # I have two trys here. The second is to catch the reset and export, but I could probably just make it on try catch. 
+    # I don't wanna mess with it right now :fatcat:
     try:
         bpy.ops.wm.read_homefile(load_ui=False, use_empty=True)
         # bpy.context.preferences.addons["io_scene_mw"].scale_correction = 1.0
@@ -93,12 +99,12 @@ def export_nif_to_fbx(args, import_path):  # truly shitcode, now. I'm sorry, Gre
     except Exception as e:
         print("Export Failed: ", import_path)
         print(e)
-        # inp = input()
 
 
 def begin_conversion(args):
     patch_NiStream_load()
 
+    # if these args weren't specified, we will just guess based on the mw_path arg, which is required.  
     if args.input is None:
         args.input = f"Texture Path: {args.mw_path}\\Data Files\\meshes\\"
 
@@ -111,7 +117,10 @@ def begin_conversion(args):
     input_path = pathlib.Path(args.input)
 
     count = 1
-    total = len(list(input_path.rglob("*.nif") if args.recurs else input_path.glob("*.nif"))) #I hate this. IDK why I can't just get a count and keep the generator
+    
+    # I hate this. IDK why I can't just get a count and keep the generator that gets the files. 
+    # I want to keep it as a pathlib path so I can replace extension with `.with_suffix(".fbx")`
+    total = len(list(input_path.rglob("*.nif") if args.recurs else input_path.glob("*.nif")))
 
     files = input_path.rglob("*.nif") if args.recurs else input_path.glob("*.nif")
 
@@ -129,7 +138,7 @@ def parse_program_args():
     parser.add_argument("-r", "--recurs", type=bool, default=True)
     parser.add_argument("-s", "--skip", type=bool, default=True)
 
-    return parser.parse_known_args()[0] #god why
+    return parser.parse_known_args()[0] #not sure what the second object here, is, but we need the first in the tuple.
 
 if __name__ == "__main__":
     args = parse_program_args()
