@@ -73,10 +73,11 @@ namespace NIF2FBX2FLVER
 
         private static void ConvertFolder(string folder, CommandLineOptions options) { 
             
-            string cmdArgs = $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}"; //the double quotes here serve to provide double quotes to the arg paths, in case of spaces.
+            //the double quotes here serve to escape double quotes for the arg paths, in case of spaces. single quotes doesn't work :sadcatcry:
+            string cmdArgs = 
+                $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}"; 
            
             var proc = new Process
-       
             {
                 StartInfo = new()
                 {
@@ -90,7 +91,7 @@ namespace NIF2FBX2FLVER
             proc.Start();
             runningProcessess.Add(proc);
             
-            if (!options.Wait) //Inverted because it's a switch, and by default it needs to be on.
+            if (!options.Wait) //Inverted because it's a switch (off by default) and by default it needs to be on.
                 proc.WaitForExit();
 
         }
