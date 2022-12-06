@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
@@ -43,6 +44,8 @@ namespace NIF2FBX2FLVER
             //ConvertOneByOne(args);
         }
 
+        private static List<Process> runningProcessess = new();
+
         private static void ConvertManyInChunks(CommandLineOptions options) {
             if (options.InputFolder is null)
                 options.InputFolder = $"{options.MorrowwindPath}\\\\Data Files\\meshes\\";
@@ -66,7 +69,10 @@ namespace NIF2FBX2FLVER
                     ConvertFolder(directory, options);
                 }
             }
-         
+
+            foreach (Process process in runningProcessess) {
+                process.WaitForExit();
+            }
 
             Console.WriteLine("Finished converting! Press any key to continue!");
             Console.ReadKey();
@@ -91,7 +97,10 @@ namespace NIF2FBX2FLVER
             };
 
             proc.Start();
-            proc.WaitForExit();
+            runningProcessess.Add(proc);
+            
+            if (!options.Wait) //Inverted because it's a switch, and by default it needs to be on.
+                proc.WaitForExit();
 
         }
         
