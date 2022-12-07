@@ -147,4 +147,4 @@ if __name__ == "__main__":
     args = parse_program_args()
     begin_conversion(args)
     print(f"Finished converting folder {args.input}")
-    input("Press the Any Key, to continue...")
+    #input("Press the Any Key, to continue...")
