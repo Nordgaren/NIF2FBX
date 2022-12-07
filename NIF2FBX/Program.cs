@@ -38,10 +38,10 @@ namespace NIF2FBX2FLVER {
             
             // If any of these are null, we set a default based on the MorrowindPath positional arg.
             if (options.InputFolder is null)
-                options.InputFolder = $"{options.MorrowindPath}\\\\Data Files\\meshes\\";
+                options.InputFolder = $"{options.MorrowindPath}\\\\Data Files\\meshes";
 
             if (options.TextureFolder is null)
-                options.TextureFolder = $"{options.MorrowindPath}\\\\Data Files\\textures\\";
+                options.TextureFolder = $"{options.MorrowindPath}\\\\Data Files\\textures";
 
             if (options.ScriptPath is null)
                 options.ScriptPath = $@"{ExeDir}\mass_convert_nif.py";
@@ -73,7 +73,13 @@ namespace NIF2FBX2FLVER {
 
             //the double quotes here serve to escape double quotes for the arg paths, in case of spaces. single quotes doesn't work :sadcatcry:
             string cmdArgs =
-                $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" -r {options.Recursive} -s {!options.Skip}";
+                $@"--background --python ""{options.ScriptPath}"" ""{options.MorrowindPath}"" -i ""{folder}"" -x ""{options.TextureFolder}"" ";
+            
+            if (options.Recursive) 
+                cmdArgs += " -r";
+            
+            if (options.Skip) 
+                cmdArgs += " -s";
 
             var proc = new Process {
                 StartInfo = new() {

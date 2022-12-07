@@ -56,7 +56,7 @@ def replace_mw_textures(tex):
         if not image.filepath:
             continue
         img = pathlib.Path(image.filepath).with_suffix(".dds").name
-        path = tex.joinpath(img)
+        path = f"{tex}\\{img}"
         image.filepath = str(path)
 
 
@@ -132,15 +132,19 @@ def begin_conversion(args):
 
 def parse_program_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--background", action='store_true')
+    parser.add_argument("--python", action='store_true')
+    parser.add_argument("script")
     parser.add_argument("mw_path")
     parser.add_argument("-i", "--input", type=str, required=False)
     parser.add_argument("-x", "--tex", type=str, required=False)
-    parser.add_argument("-r", "--recurs", type=bool, default=True)
-    parser.add_argument("-s", "--skip", type=bool, default=True)
+    parser.add_argument("-r", "--recurs", action='store_true', default=False)
+    parser.add_argument("-s", "--skip", action='store_false', default=True)
 
-    return parser.parse_known_args()[0] #not sure what the second object here, is, but we need the first in the tuple.
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_program_args()
     begin_conversion(args)
     print(f"Finished converting folder {args.input}")
+    input("Press the Any Key, to continue...")
