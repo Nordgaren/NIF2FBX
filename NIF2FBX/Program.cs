@@ -55,7 +55,7 @@ namespace NIF2FBX2FLVER {
                 return;
             }
 
-            // If -w is set, we need to keep a list of processess, and wait for each of them, before we exit.
+            // If -w is set, we need to keep a list of processes, and wait for each of them, before we exit.
             // Not the most optimized code, but it's probably nbd.
             string[] directories = Directory.GetDirectories(options.InputFolder);
             List<Process> runningProcessess = new();

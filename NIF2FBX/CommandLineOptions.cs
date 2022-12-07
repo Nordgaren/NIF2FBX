@@ -10,9 +10,9 @@ namespace NIF2FBX2FLVER {
         public string MorrowindPath { get; set; }
         [Option('p', "python", Required = false, HelpText = "NIF conversion python script path. Defaults to inside this exe's folder + mass_convert_nif.py")]
         public string ScriptPath { get; set; }
-        [Option('i', "input", Required = false, HelpText = "Folder to convert Morrowwind Path + \\Data Files\\meshes\\")]
+        [Option('i', "input", Required = false, HelpText = "Folder to convert Morrowind Path + \\Data Files\\meshes\\")]
         public string InputFolder { get; set; }
-        [Option('x', "tex", Required = false, HelpText = "Morrowwind Texture Folder. Defaults to Morrowwind Path + \\Data Files\\textures\\")]
+        [Option('x', "tex", Required = false, HelpText = "Morrowind Texture Folder. Defaults to Morrowind Path + \\Data Files\\textures\\")]
         public string TextureFolder { get; set; }
         [Option('r', "recursive", Required = false, HelpText = "Switch for searching subdirectories for nif files.")]
         public bool Recursive { get; set; }
