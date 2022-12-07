@@ -23,7 +23,7 @@ Options:
  	-w, --wait                  Switch to wait for the current blender process before going to the next one. Ony by default
 ```
 
-The tool will work recursively through the folder you give it, so it will do all subfolders, as well.
+The tool will work recursively through the folder you give it, so it will do all subfolders, as well. It will split up all of the subfolders into multiple calls to blender.  
 
 I don't recommend doing all of them at once, as the tool even makes a new scene in blender, and it does get a bit bogged down. I will try to fix this in the future.  
 
@@ -31,6 +31,11 @@ I don't recommend doing all of them at once, as the tool even makes a new scene 
 [Greatness7](https://github.com/Greatness7) - Gave me most of the script that I needed
 
 # Change Log
+### 1.1
+* Made a nice CLI interface with some switches
+
+* Changes default behaviour to split up folders and call blender multiple times.
+
 ### 1.0
 
 * Initial Release
