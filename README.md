@@ -6,7 +6,7 @@ Converts .floppa files to .bingus
 First you will need to download blender and install this plugin by [Greatness7](https://github.com/Greatness7) - [io_scene_mw](https://github.com/Greatness7/io_scene_mw)  
 Go to Edit > Preferences > Add-ons > Install and activate the plugin (Select the zip)  
 Once you have installed that plugin in blender you will extract the tool and all of it's contents to a folder you choose.
-The command basic for this tool is `NIF2FBX.exe "P:/ath/to/blender.exe" "P:/ath/to/morrowwind"`
+The command basic for this tool is `NIF2FBX.exe  "P:/ath/to/morrowwind/Data Files/textures" "P:/ath/to/morrowwind/Data Files/Data Files/meshes" "P:/ath/to/blender.exe"`
 
 Options:  
 ```
