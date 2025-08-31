@@ -38,10 +38,10 @@ namespace NIF2FBX2FLVER {
             
             // If any of these are null, we set a default based on the MorrowindPath positional arg.
             if (options.InputFolder is null)
-                options.InputFolder = $"{options.MorrowindPath}\\\\Data Files\\meshes";
+                options.InputFolder = $"{options.MorrowindPath}\\Data Files\\meshes";
 
             if (options.TextureFolder is null)
-                options.TextureFolder = $"{options.MorrowindPath}\\\\Data Files\\textures";
+                options.TextureFolder = $"{options.MorrowindPath}\\Data Files\\textures";
 
             if (options.ScriptPath is null)
                 options.ScriptPath = $@"{ExeDir}\mass_convert_nif.py";
