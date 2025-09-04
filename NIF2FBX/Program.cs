@@ -44,7 +44,7 @@ namespace NIF2FBX2FLVER {
                 options.TextureFolder = $"{options.MorrowindPath}\\Data Files\\textures";
 
             if (options.ScriptPath is null)
-                options.ScriptPath = $@"{ExeDir}\mass_convert_nif.py";
+                options.ScriptPath = $"{ExeDir}\\mass_convert_nif.py";
 
             if (!File.Exists(options.ScriptPath))
                 throw new($"Script does not exist! Path: {options.ScriptPath}");

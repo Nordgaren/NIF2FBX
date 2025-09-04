@@ -55,7 +55,7 @@ def replace_mw_textures(tex):
     for image in bpy.data.images:
         if not image.filepath:
             continue
-        img = pathlib.Path(image.filepath).with_suffix(".dds").name
+        img = pathlib.Path(image.filepath).with_suffix(".dds")
         path = f"{tex}\\{img}"
         image.filepath = str(path)
 
